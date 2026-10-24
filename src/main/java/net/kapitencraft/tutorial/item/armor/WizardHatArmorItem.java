@@ -12,14 +12,14 @@ import net.minecraft.world.item.Rarity;
 import org.jetbrains.annotations.Nullable;
 
 public class WizardHatArmorItem extends AbstractArmorItem  {
-    private static final ResourceLocation TEXTURE_LOCATION = makeCustomTextureLocation(TutorialMod.MOD_ID, "wizard_hat");
+    private static final String TEXTURE_LOCATION = makeCustomTextureLocation(TutorialMod.MOD_ID, "wizard_hat");
 
     public WizardHatArmorItem() {
         super(ArmorMaterials.LEATHER, Type.HELMET, new Properties().rarity(Rarity.EPIC));
     }
 
     @Override
-    public @Nullable ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
+    public @Nullable String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
         return TEXTURE_LOCATION;
     }
 }

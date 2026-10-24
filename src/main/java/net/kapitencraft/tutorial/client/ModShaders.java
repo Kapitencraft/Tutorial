@@ -3,14 +3,14 @@ package net.kapitencraft.tutorial.client;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.kapitencraft.tutorial.TutorialMod;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterShadersEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.io.IOException;
 
-@EventBusSubscriber(value = Dist.CLIENT)
+@Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class ModShaders {
     private static ShaderInstance RENDERTYPE_ENTITY_GREYSCALE_CUTOUT_NO_CULL;
 

@@ -7,16 +7,19 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 public interface ModAttributes {
     DeferredRegister<Attribute> REGISTRY = DeferredRegister.create(Registries.ATTRIBUTE, TutorialMod.MOD_ID);
-    Holder<Attribute> HEAL_ATTRIBUTE = REGISTRY.register("heal", ()-> new RangedAttribute("generic.heal", 0, 0, 200));
-    Holder<Attribute> MANA = REGISTRY.register("mana", () -> new RangedAttribute("generic.mana", 100, 0, Double.MAX_VALUE));
+    RegistryObject<Attribute> HEAL_ATTRIBUTE = REGISTRY.register("heal", ()-> new RangedAttribute("generic.heal", 0, 0, 200));
+    RegistryObject<Attribute> MANA = REGISTRY.register("mana", () -> new RangedAttribute("generic.mana", 100, 0, Double.MAX_VALUE));
 
 
-    static double getAttributeValue(LivingEntity living, Holder<Attribute> attribute) {
-        AttributeInstance instance = living.getAttribute(attribute);
+    static double getAttributeValue(LivingEntity living, Supplier<Attribute> attribute) {
+        AttributeInstance instance = living.getAttribute(attribute.get());
         if (instance == null) return -1;
         else return instance.getValue();
     }

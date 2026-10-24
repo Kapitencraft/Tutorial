@@ -1,13 +1,12 @@
 package net.kapitencraft.tutorial.item.armor;
 
 import net.minecraft.Util;
-import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.*;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -18,7 +17,7 @@ import java.util.function.Function;
  */
 public abstract class AbstractArmorItem extends ArmorItem {
 
-    public AbstractArmorItem(Holder<ArmorMaterial> pMaterial, Type pType, Properties pProperties) {
+    public AbstractArmorItem(ArmorMaterial pMaterial, Type pType, Properties pProperties) {
         super(pMaterial, pType, pProperties);
     }
 
@@ -26,7 +25,7 @@ public abstract class AbstractArmorItem extends ArmorItem {
         return isFullSetActive(living, this.getMaterial());
     }
 
-    public static boolean isFullSetActive(LivingEntity living, Holder<ArmorMaterial> materials) {
+    public static boolean isFullSetActive(LivingEntity living, ArmorMaterial materials) {
         if (living == null) {
             return false;
         }
@@ -47,8 +46,8 @@ public abstract class AbstractArmorItem extends ArmorItem {
      * creates a custom texture for your armor in
      * <br>{@code <nameSpace>:textures/models/armor/custom/<id>.png}
      */
-    public static ResourceLocation makeCustomTextureLocation(String nameSpace, String id) {
-        return ResourceLocation.fromNamespaceAndPath(nameSpace, "textures/models/armor/custom/" + id + ".png");
+    public static String makeCustomTextureLocation(String nameSpace, String id) {
+        return ResourceLocation.fromNamespaceAndPath(nameSpace, "textures/models/armor/custom/" + id + ".png").toString();
     }
 
     /**
@@ -57,7 +56,7 @@ public abstract class AbstractArmorItem extends ArmorItem {
      * @param creator  a lambda function to create an instance of the armor, mostly a method reference to the constructor
      * @return a Map mapping the ArmorType to the RegObj for the slot
      */
-    public static <T extends AbstractArmorItem> Map<Type, DeferredItem<T>> createRegistry(DeferredRegister.Items registry, String baseName, Function<Type, T> creator) {
+    public static <T extends AbstractArmorItem> Map<Type, RegistryObject<T>> createRegistry(DeferredRegister<Item> registry, String baseName, Function<Type, T> creator) {
         return Util.make(new EnumMap<>(Type.class), map -> {
             for (Type type : Type.values()) {
                 map.put(type, registry.register(baseName + "_" + type.getName(), () -> creator.apply(type)));

@@ -1,6 +1,5 @@
 package net.kapitencraft.tutorial.saved_data;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -13,7 +12,7 @@ public class PlayerCounter extends SavedData {
     private int counter;
 
     @Override
-    public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+    public CompoundTag save(CompoundTag tag) {
         tag.putInt(COUNTER_TAG_ID, counter);
         return tag;
     }
@@ -24,13 +23,13 @@ public class PlayerCounter extends SavedData {
         } else {
             ServerLevel serverLevel = (ServerLevel) level;
             return serverLevel.getDataStorage().computeIfAbsent(
-                    new Factory<>(PlayerCounter::new, PlayerCounter::load),
+                    PlayerCounter::load, PlayerCounter::new,
                     "player_counter"
             );
         }
     }
 
-    private static PlayerCounter load(CompoundTag tag, HolderLookup.Provider provider) {
+    private static PlayerCounter load(CompoundTag tag) {
         PlayerCounter counter = new PlayerCounter();
         counter.counter = tag.getInt(COUNTER_TAG_ID);
         return counter;

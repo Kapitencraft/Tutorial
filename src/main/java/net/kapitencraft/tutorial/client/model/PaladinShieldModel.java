@@ -40,8 +40,8 @@ public class PaladinShieldModel extends Model {
 	}
 
 	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-		plate.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		handle.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float r, float g, float b, float a) {
+		plate.render(poseStack, vertexConsumer, packedLight, packedOverlay, r, g, b, a);
+		handle.render(poseStack, vertexConsumer, packedLight, packedOverlay, r, g, b, a);
 	}
 }

@@ -1,85 +1,64 @@
 package net.kapitencraft.tutorial.advancement;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.critereon.ContextAwarePredicate;
-import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
+import com.google.gson.JsonObject;
+import net.kapitencraft.tutorial.TutorialMod;
+import net.minecraft.advancements.critereon.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
 
 
 public class ManaConsumedCriterionTrigger extends SimpleCriterionTrigger<ManaConsumedCriterionTrigger.Instance> {
-    public static final Codec<Instance> CODEC = RecordCodecBuilder.create(i -> i.group(
-            ContextAwarePredicate.CODEC.optionalFieldOf("player").forGetter(Instance::player),
-            Type.CODEC.fieldOf("type").forGetter(inst -> inst.type),
-            Codec.DOUBLE.fieldOf("value").forGetter(inst -> inst.value)
-    ).apply(i, Instance::new));
-
-    @Override
-    public Codec<Instance> codec() {
-        return CODEC;
-    }
+    private static final ResourceLocation LOCATION = TutorialMod.res("mana_consumed");
 
     public void trigger(ServerPlayer pPlayer, double amount) {
         this.trigger(pPlayer, instance -> instance.enough(amount));
     }
 
-    public Criterion<Instance> exactly(double value) {
-        return new Criterion<>(this, new Instance(Optional.empty(), Type.EXACTLY, value));
+    public Instance exactly(double value) {
+        return new Instance(ContextAwarePredicate.ANY, MinMaxBounds.Doubles.exactly(value));
     }
 
-    public Criterion<Instance> above(double value) {
-        return new Criterion<>(this, new Instance(Optional.empty(), Type.MORE, value));
+    public Instance above(double value) {
+        return new Instance(ContextAwarePredicate.ANY, MinMaxBounds.Doubles.atLeast(value));
     }
 
-    public Criterion<Instance> below(double value) {
-        return new Criterion<>(this, new Instance(Optional.empty(), Type.LESS, value));
+    public Instance below(double value) {
+        return new Instance(ContextAwarePredicate.ANY, MinMaxBounds.Doubles.atMost(value));
     }
 
-    public Criterion<Instance> any() {
-        return above(0);
+    @Override
+    public ResourceLocation getId() {
+        return LOCATION;
     }
 
-    private enum Type implements StringRepresentable {
-        EXACTLY,
-        LESS,
-        MORE;
-
-        private static final EnumCodec<Type> CODEC = StringRepresentable.fromEnum(Type::values);
-
-        @Override
-        public @NotNull String getSerializedName() {
-            return name().toLowerCase();
-        }
+    public Instance any() {
+        return new Instance(ContextAwarePredicate.ANY, MinMaxBounds.Doubles.ANY);
     }
 
-    public static class Instance implements SimpleInstance {
-        private final ContextAwarePredicate player;
-        private final Type type;
-        private final double value;
+    @Override
+    protected @NotNull Instance createInstance(JsonObject json, ContextAwarePredicate predicate, DeserializationContext deserializationContext) {
+        MinMaxBounds.Doubles d = MinMaxBounds.Doubles.fromJson(json.get("bounds"));
+        return new Instance(predicate, d);
+    }
 
-        @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-        private Instance(Optional<ContextAwarePredicate> player, Type type, double value) {
-            this.player = player.orElse(null);
-            this.type = type;
+    public static class Instance extends AbstractCriterionTriggerInstance {
+        private final MinMaxBounds.Doubles value;
+
+        public Instance(ContextAwarePredicate player, MinMaxBounds.Doubles value) {
+            super(LOCATION, player);
             this.value = value;
         }
 
-        @Override
-        public @NotNull Optional<ContextAwarePredicate> player() {
-            return Optional.ofNullable(player);
+        public boolean enough(double mana) {
+            return value.matches(mana);
         }
 
-        public boolean enough(double mana) {
-            return switch (type) {
-                case LESS -> mana <= value;
-                case EXACTLY -> mana == value;
-                case MORE -> mana >= value;
-            };
+        @Override
+        public JsonObject serializeToJson(SerializationContext conditions) {
+            JsonObject object = super.serializeToJson(conditions);
+            object.add("bounds", this.value.serializeToJson());
+            return object;
         }
     }
 }
