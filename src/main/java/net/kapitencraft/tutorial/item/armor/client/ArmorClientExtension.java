@@ -1,21 +1,15 @@
 package net.kapitencraft.tutorial.item.armor.client;
 
-import net.kapitencraft.tutorial.item.armor.AbstractArmorItem;
 import net.kapitencraft.tutorial.item.armor.client.model.ArmorModel;
 import net.kapitencraft.tutorial.item.armor.client.provider.ArmorModelProvider;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Map;
 
 /**
  * Client extension wrapper to add armor models
@@ -26,6 +20,7 @@ public class ArmorClientExtension implements IClientItemExtensions {
 
     /**
      * creates a new Armor Client Extension
+     *
      * @param provider the model provider
      */
     public ArmorClientExtension(ArmorModelProvider provider) {
@@ -50,21 +45,11 @@ public class ArmorClientExtension implements IClientItemExtensions {
         return model;
     }
 
+    @SuppressWarnings("unchecked")
     @ApiStatus.Internal
     private <T extends LivingEntity> void copyModelProperties(HumanoidModel<T> original, ArmorModel replacement) {
         original.copyPropertiesTo((HumanoidModel<T>) replacement);
         replacement.rightBoot.copyFrom(original.rightLeg);
         replacement.leftBoot.copyFrom(original.leftLeg);
-    }
-
-    /**
-     * used to register custom armor extensions
-     * @param <T> the class type of the armor item
-     * @param map the armor to register
-     * @param event the event to register to
-     * @param provider the model to use
-     */
-    public static <T extends AbstractArmorItem> void register(Map<ArmorItem.Type, DeferredItem<T>> map, RegisterClientExtensionsEvent event, ArmorModelProvider provider) {
-        event.registerItem(new ArmorClientExtension(provider), map.values().toArray(DeferredItem[]::new));
     }
 }

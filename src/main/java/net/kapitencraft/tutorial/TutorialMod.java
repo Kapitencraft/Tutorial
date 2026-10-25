@@ -1,16 +1,15 @@
 package net.kapitencraft.tutorial;
 
 import com.mojang.logging.LogUtils;
-import net.kapitencraft.tutorial.advancement.ModCriterionTriggers;
 import net.kapitencraft.tutorial.attribute.ModAttributes;
 import net.kapitencraft.tutorial.block.ModBlocks;
-import net.kapitencraft.tutorial.item.ModDataComponents;
 import net.kapitencraft.tutorial.item.ModItems;
 import net.kapitencraft.tutorial.mob_effect.ModMobEffects;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.common.Mod;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -26,14 +25,14 @@ public class TutorialMod {
 
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public TutorialMod(IEventBus modEventBus) {
+    public TutorialMod() {
+
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         ModAttributes.REGISTRY.register(modEventBus);
         ModItems.REGISTRY.register(modEventBus);
         ModBlocks.REGISTRY.register(modEventBus);
         ModMobEffects.REGISTRY.register(modEventBus);
-        ModDataComponents.REGISTRY.register(modEventBus);
-        ModCriterionTriggers.REGISTRY.register(modEventBus);
 
         //StartupMessageManager.addModMessage("Counting!");
         //ProgressMeter meter = StartupMessageManager.addProgressBar("Counting...", Integer.MAX_VALUE);
